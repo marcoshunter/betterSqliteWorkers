@@ -27,7 +27,7 @@ const createWindow = () => {
   //This code is all from https://github.com/WiseLibs/better-sqlite3/issues/237
   /* Export a function that queues pending work. */
   const { Worker } = require('worker_threads');
-  const { join } = require('path');
+  // const { join } = require('path');
 
   const queue = [];
   const MyWorkerTask = (filePath, operator, parameters) => {
@@ -48,8 +48,7 @@ const createWindow = () => {
       // const worker = new Worker(join(__dirname, "worker.js"));
 
       //However in the newer version, this is the only way I can get it to work
-      const worker = new Worker('./src/worker.js');
-
+      const worker = new Worker(new URL('./worker.js', import.meta.url));
 
       let job = null; // Current item from the queue
       let error = null; // Error that caused the worker to crash
@@ -79,13 +78,13 @@ const createWindow = () => {
           workers = workers.filter(w => w.takeWork !== takeWork);
           if (code !== 0) {
               console.error(`worker exited with code ${code}`);
-              spawn(); // Worker died, so spawn a new one
+              // spawn(); // Worker died, so spawn a new one
           }
       });
   }
   spawn();
 
-  setInterval(() => {
+  setTimeout(() => {
       console.log(`timeout add MyWorkerTask`);
       MyWorkerTask(dbdatapath, "TEST", { id: 1 });
   }, 1000);
