@@ -1,3 +1,6 @@
+const {cpSync} = require('fs');
+const {join} = require('path');
+
 module.exports = {
   packagerConfig: {},
   rebuildConfig: {},
@@ -46,4 +49,14 @@ module.exports = {
       },
     },
   ],
+  hooks: {
+    packageAfterCopy: async (config, buildPath, electronVersion, platform, arch) => {
+      const modules = ['better-sqlite3', 'bindings', 'file-uri-to-path']
+
+      for (const module of modules) {
+        const src = join(__dirname, 'node_modules', module);
+        cpSync(src, join(buildPath, 'node_modules', module), {recursive: true});
+      }
+    }
+  }
 };
